@@ -1,0 +1,194 @@
+Question 1
+
+use sql_assignment;
+
+create table city(
+ID int,
+NAME varchar(17),
+COUNTRYCODE varchar(3),
+DISTRICT varchar(20),
+POPULATION int
+);
+
+describe city;
+
+
+select * from city;
+
+
+Query all columns for all American cities in the CITY table with populations larger than 100000.
+The CountryCode for America is USA
+
+
+select * from city
+where countrycode = 'USA' and population > 100000;
+
+Query the NAME field for all American cities in the CITY table with populations larger than 120000.
+The CountryCode for America is USA.
+
+select countrycode as Country ,group_concat(distinct Name) as Cities from city 
+where countrycode = 'USA' and population>120000;
+
+Query all columns (attributes) for every row in the CITY table.
+
+select * from city;
+
+Query all columns for a city in CITY with the ID 1661. The CITY table is described as follows
+Query all attributes of every Japanese city in the CITY table. The COUNTRYCODE for Japan is JPN.
+Query the names of all the Japanese cities in the CITY table. The COUNTRYCODE for Japan is JPN
+
+-- JPN data not Avaiable in the Data set
+
+
+Question 2
+
+
+use sql_assignment2;
+
+create table station(
+id int,
+city varchar(21),
+state varchar(2),
+lat_n int,
+long_w int
+);
+
+
+insert into station values(794,"Kissee Mills","MO",139,73),(824,"Loma Mar","CA",48,130),(603,"Sandy Hook","CT",72,148),(478,"Tipton","IN",33,97),(619,"Arlington","CO",75,92),(711,"Turner","AR",50,101),(839,"Slidell","LA",85,151),(411,"Negreet","LA",98,105),(588,"Glencoe","KY",46,136),(665,"Chelsea","IA",98,59);
+
+select * from station;
+
+select count(*) from station;
+
+
+select id,state, group_concat(distinct city separator '<->') as cities_in_state from station
+group by state;
+
+select * from station where lat_n < 50 and long_w > 130;
+
+select id, city from station where state in ('LA','CA');
+
+insert into station values
+(342,"Chignik Lagoon","AK",103,153),
+(733,"Pelahatchie","MS",38,28),
+(441,"Hanna","IL",50,136),
+(811,"Dorrance","KS",102,121),
+(698,"Albany","CA",49,80),
+(325,"Monument","KS",70,141),
+(414,"Manchester","MD",73,37),
+(113,"Prescott","IA",39,65),
+(971,"Graettinger","IA",94,150),
+(266,"Cahone","CO",116,127);
+
+select * from station;
+
+
+use sql_assignment2;
+
+ Query a list of CITY and STATE from the STATION table.
+
+select state, group_concat(distinct city separator '<->') as cities from station
+group by state;
+
+-- Query a list of CITY names from STATION for cities that have an even ID number. Print the results
+-- in any order, but exclude duplicates from the answer.
+
+select ID, City from station
+where ID%2 = 0;
+
+-- Q3. Find the difference between the total number of CITY entries in the table and the number of
+-- distinct CITY entries in the table
+
+select count(city),count(distinct city), count(city)-count(distinct city) as difference from  station;
+
+select state, count(state),count(distinct state), count(state)-count(distinct state) as difference from  station
+group by state;
+
+ Query the two cities in STATION with the shortest and longest CITY names, as well as their
+ respective lengths (i.e.: number of characters in the name). If there is more than one smallest or
+-largest city, choose the one that comes first when ordered alphabetically
+
+Query the list of CITY names starting with vowels (i.e., a, e, i, o, or u) from STATION. Your result
+cannot contain duplicates.
+Input Format
+
+----- ABOVE AND REST QUESTIONS-->SOLUTION IN PROGRESS
+
+
+Question 3
+
+create table product(
+product_id int primary key,
+product_name varchar (20),
+unit_price int
+);
+
+create table sales(
+seller_id int,
+product_id int,
+buyer_id int,
+sale_date date,
+quantity int,
+price int,
+constraint fk foreign key (product_id) references product(product_id)
+);
+
+insert into product values(1,"S8",1000),(2,"G4",800),(3,"iPhone",1400);
+
+
+insert into sales values(1,1,1,"2019-01-21",2,2000),(1,2,2,"2019-02-17",1,800),(2,2,3,"2019-06-02",1,800),(2,3,4,"2019-05-13",2,2800);
+
+
+select*from product;
+select*from sales;
+
+select product.*,sales.* from sales
+inner join product  on sales.product_id = product.product_id
+where sale_date between "2019-01-01" AND "2019-03-31";
+
+-- Created a View to avoid running the Join query again-- 
+
+create view product_sales_view as select product_name,unit_price,sales.* from sales
+inner join product  on sales.product_id = product.product_id;
+
+select * from product_sales_view;
+
+select sale_date, product_name, product_id from product_sales_view
+where sale_date between "2019-01-01" AND "2019-03-31"
+order by sale_date;
+
+-- The product with id 1 was only sold in the spring of 2019.
+-- The product with id 2 was sold in the spring of 2019 but was also sold after the spring of 2019.
+-- The product with id 3 was sold after spring 2019.
+-- We return only product 1 as it is the product that was only sold in the spring of 2019
+
+
+-- The product with id 1 was only sold in the spring of 2019
+
+select sale_date,product_name,product_id from product_sales_view
+where sale_date between "2019-03-03" AND "2019-06-30"
+order by sale_date;
+
+--  The product with id 3 was sold after spring 2019
+
+select sale_date,product_name,product_id from product_sales_view
+where sale_date between "2019-07-01" AND "2019-12-31";
+
+
+Question 4
+
+use sql_assignment4;
+
+create table views(
+article_id int,
+author_id int,
+viewer_id int,
+view_date date
+);
+
+insert into views values(1,3,5,"2019-08-01"),(1,3,6,"2019-08-02"),(2,7,7,"2019-08-01"),(2,7,6,"2019-08-02"),(4,7,1,"2019-07-22"),(3,4,4,"2019-07-21"),(3,4,4,"2019-07-21");
+
+select * from views;
+
+select author_id, count(distinct viewer_id) as viewer_count , view_date from views
+group by author_id
