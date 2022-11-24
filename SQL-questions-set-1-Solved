@@ -112,6 +112,10 @@ Query the list of CITY names starting with vowels (i.e., a, e, i, o, or u) from 
 cannot contain duplicates.
 Input Format
 
+select distinct city from station
+where regexp_like(city,'^[aeiouAEIOU]')
+order by city;
+
 ----- ABOVE AND REST QUESTIONS-->SOLUTION IN PROGRESS
 
 
